@@ -22,8 +22,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.blockstack.android.sdk.*
 import org.blockstack.android.sdk.model.*
-import org.blockstack.collection.Contact
 import java.io.ByteArrayOutputStream
+import java.net.URI
 import java.net.URL
 import java.util.*
 
@@ -47,9 +47,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        val config = "https://flamboyant-darwin-d11c17.netlify.com"
-                .toBlockstackConfig(arrayOf(BaseScope.StoreWrite.scope, Contact.scope))
-
+        val config = BlockstackConfig(URI("https://flamboyant-darwin-d11c17.netlify.com"), "/", "/manifest.json", arrayOf(BaseScope.StoreWrite.scope))
 
         val sessionStore = SessionStore(PreferenceManager.getDefaultSharedPreferences(this))
         blockstack = Blockstack()
@@ -126,7 +124,6 @@ class MainActivity : AppCompatActivity() {
                     runOnUiThread {
                         deleteFileMessageTextView.text = "File $textFileName deleted."
                     }
-
                 }
             }
         }
@@ -146,7 +143,6 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     Toast.makeText(this@MainActivity, "error: ${readURLResult.error}", Toast.LENGTH_SHORT).show()
                 }
-
             }
         }
 
@@ -173,7 +169,6 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     Toast.makeText(this@MainActivity, "error: ${readURLResult.error}", Toast.LENGTH_SHORT).show()
                 }
-
             }
         }
 
@@ -191,7 +186,6 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     Toast.makeText(this@MainActivity, "error: ${contentsResult.error}", Toast.LENGTH_SHORT).show()
                 }
-
             }
         }
 
@@ -242,7 +236,6 @@ class MainActivity : AppCompatActivity() {
                     getUserAppFileUrlText.text = it
                 }
             }
-
         }
 
         listFilesButton.setOnClickListener {
@@ -264,8 +257,6 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     countResult.error
                 })
-
-
             }
         }
 
@@ -280,22 +271,6 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     it.error?.message
                 }
-            }
-        }
-
-        getContactsButton.setOnClickListener { _ ->
-            getContactsText.text = "Getting contacts ..."
-            val contacts = StringBuffer()
-            lifecycleScope.launch(Dispatchers.IO) {
-                val count = Contact.list({ id ->
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        Contact.get(id, blockstackSession())
-                        contacts.append()
-                        getContactsText.text = contacts.toString()
-                    }
-                    true
-                }, blockstackSession())
-                Log.d(TAG, "count $count")
             }
         }
 
